@@ -24,7 +24,7 @@ function(global.model, beta = c("none", "sd", "partial.sd"),
 		 fixed = NULL, m.lim = NULL, m.min, m.max, subset,
 		 trace = FALSE, varying, extra, ct.args = NULL,
 		 deps = attr(allTerms0, "deps"),
-         cluster = NULL,
+         cluster = NULL, limite_predictores = 93
 		 ...) {
          
          
@@ -263,10 +263,11 @@ function(global.model, beta = c("none", "sd", "partial.sd"),
 
 	nov <- as.integer(nVars - nFixed)
 	ncomb <- (2L ^ nov) * nVariants
-    novMax <- log2(.Machine$integer.max %/% nVariants)
-    if(nov > novMax)
-		cry(, "number of non-fixed predictors [%d] exceeds the allowed maximum of %.0f (with %d variants)", 
-            nov, novMax, nVariants)
+    novMax <- ifelse(is.null(limite_predictores), log2(.Machine$integer.max %/% nVariants), limite_predictores)
+    if (nov > novMax) {
+	    cry(, "number of non-fixed predictors [%d] exceeds the allowed maximum of %.0f (with %d variants)", 
+		nov, novMax, nVariants)
+	    }
     resultChunkSize <- 25L
 	if(evaluate) {
 		rvNcol <- nVars + nVarying + 3L + nExtra
